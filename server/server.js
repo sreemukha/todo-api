@@ -1,11 +1,11 @@
-let express = require('express');
-let bodyParser = require('body-parser');
-
+const express = require('express');
+const bodyParser = require('body-parser');
+const {ObjectID} = require('mongodb');
 
 // local imports
-let {mongoose} = require('./db/mongoose');
-let {Todo} = require('./models/todo');
-let {User} = require('./models/user');
+const {mongoose} = require('./db/mongoose');
+const {Todo} = require('./models/todo');
+const {User} = require('./models/user');
 
 //create express app
 let app = express();
@@ -38,6 +38,26 @@ app.get('/todos', (req,res) =>{
 
 app.listen(3000, ()=>{
   console.log(`Started on port 3000`);
+});
+
+
+// Configuring GET /todos/123
+app.get('/todos/:id', (req,res) => {
+  //req.params.id gives the /todos/:id given by the user
+  let id = req.params.id;
+  if(!ObjectID.isValid(id)){
+    return res.status(404).send();
+  }
+
+  Todo.findById(id).then((todo) => {
+    if(!todo){
+      return res.status(404).send();
+    }
+    res.send({todo});
+  }).catch((err) => {
+    res.status(400).send(err);
+  })
+
 });
 
 module.exports = {app};
