@@ -24,7 +24,7 @@ app.post('/todos',(req,res) => {
   }, (err) =>{
     //sending bad request response back to user
     res.status(400).send(err);
-  })
+  });
 });
 
 // Configuring GET /todos route
