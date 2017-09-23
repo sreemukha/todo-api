@@ -20,6 +20,7 @@ const port = process.env.PORT;
 // Configuring middleware
 app.use(bodyParser.json());
 
+
 // Configuring POST /todos route
 app.post('/todos',(req,res) => {
   let todo = new Todo({
@@ -64,6 +65,8 @@ app.get('/todos/:id', (req,res) => {
 
 });
 
+
+// Configuring DELETE /todos/123
 app.delete('/todos/:id', (req,res) => {
   const id = req.params.id;
   if(!ObjectID.isValid(id)){
@@ -79,6 +82,8 @@ app.delete('/todos/:id', (req,res) => {
   });
 });
 
+
+// Configuring PATCH /todos/123
 app.patch('/todos/:id', (req,res) => {
   const id = req.params.id;
   let body = _.pick(req.body, ['text', 'completed']);
@@ -100,6 +105,21 @@ app.patch('/todos/:id', (req,res) => {
     }
     res.send({todo});
   }).catch((err) => res.status(400).send());
+})
+
+
+// Configuring POST /users
+
+app.post('/users', (req,res) => {
+  const body = _.pick(req.body, ['email','password']);
+  const user = new User(body);
+
+  user.save().then((user) => {
+    res.status(200).send(user);
+  }, (err) => {
+    res.status(400).send(err);
+  })
+
 })
 
 app.listen(port, ()=>{
