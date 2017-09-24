@@ -41,6 +41,7 @@ let UserSchema = new mongoose.Schema({
 // arrow functions do not bind 'this' keyword
 
 // overriding toJSON method
+
 UserSchema.methods.toJSON = function(){
   let user = this;
   let userObject = user.toObject(); // mongoose variable 'user' to regular object
@@ -48,7 +49,7 @@ UserSchema.methods.toJSON = function(){
 }
 
 UserSchema.methods.generateAuthToken = function(){
-    let user = this;
+    let user = this; // instance of User model as this binding
     let access = 'auth';
     let token = jwt.sign({_id: user._id.toHexString(), access: access}, 'secret').toString();
     // ES5 syntax without destructuring
@@ -65,6 +66,32 @@ UserSchema.methods.generateAuthToken = function(){
       return token;
     });
 };
+
+// model method using statics object
+
+UserSchema.statics.findByToken = function(token){
+  let User = this; // whole model as this binding
+  let decoded;
+
+  try{
+    decoded = jwt.verify(token, 'secret');
+  } catch(e) {
+    // return a promise
+    return Promise.reject();
+
+    // return new Promise((resolve, reject) => {
+    //   reject();
+    // });
+  }
+
+  return User.findOne({
+    '_id': decoded._id,
+    'tokens.token': token,
+    'tokens.access': 'auth'
+  });
+};
+
+// create User model
 
 let User = mongoose.model('User', UserSchema);
 

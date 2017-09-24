@@ -10,6 +10,7 @@ const {ObjectID} = require('mongodb');
 const {mongoose} = require('./db/mongoose');
 const {Todo} = require('./models/todo');
 const {User} = require('./models/user');
+const {authenticate} = require('./middleware/authenticate');
 
 //create express app
 let app = express();
@@ -115,14 +116,33 @@ app.post('/users', (req,res) => {
   const user = new User(body);
 
   user.save().then(() => {
-    return user.generateAuthToken();
+    return user.generateAuthToken(); // instance method
   }).then((token) => {
-    res.header('x-auth',token).send(user);
+    res.header('x-auth',token).send(user); // no need to call user.toJSON instance method explicitly
   }).catch((err) => {
     res.status(400).send(err);
-  })
+  });
+});
 
-})
+
+
+// Configuring private route to identify the user
+
+app.get('/users/me', authenticate, (req,res) => {
+  // let token = req.header('x-auth');
+  // User.findByToken(token).then((user) => {
+  //   if(!user) {
+  //     // res.status(401).send(); // this looks same as reject case of the promise
+  //     return Promise.reject(); // therefore directly fire the reject() case
+  //   }
+  //
+  //   res.send(user);
+  // }).catch((e) => {
+  //   // 401 - authentication required
+  //   res.status(401).send();
+  // });
+  res.send(req.user);
+});
 
 app.listen(port, ()=>{
   console.log(`Started on port ${port}`);
