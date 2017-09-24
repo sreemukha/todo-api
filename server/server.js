@@ -129,6 +129,7 @@ app.post('/users', (req,res) => {
 // Configuring private route to identify the user
 
 app.get('/users/me', authenticate, (req,res) => {
+  res.send(req.user);
   // let token = req.header('x-auth');
   // User.findByToken(token).then((user) => {
   //   if(!user) {
@@ -141,7 +142,6 @@ app.get('/users/me', authenticate, (req,res) => {
   //   // 401 - authentication required
   //   res.status(401).send();
   // });
-  res.send(req.user);
 });
 
 app.listen(port, ()=>{
