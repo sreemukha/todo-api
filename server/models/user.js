@@ -13,6 +13,7 @@ let UserSchema = new mongoose.Schema({
       trim: true,
       unique: true,
       validate: {
+        isAsync: false,
         validator: (value) => {
             return validator.isEmail(value);
         },
