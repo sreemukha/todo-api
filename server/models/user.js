@@ -69,6 +69,18 @@ UserSchema.methods.generateAuthToken = function(){
     });
 };
 
+UserSchema.methods.removeToken = function(token) {
+  // mongodb operator $pull removes items from array that match certain criteria
+  let user = this;
+  return user.update({
+    $pull: {
+      tokens: {
+        token:token // ES6 - just token instead of token: token
+      }
+    }
+  })
+};
+
 // model method using statics object
 
 UserSchema.statics.findByToken = function(token){
