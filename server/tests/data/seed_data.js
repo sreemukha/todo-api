@@ -5,8 +5,10 @@ const jwt = require('jsonwebtoken');
 const {Todo} = require('../../models/todo');
 const {User} = require('../../models/user');
 
+
 const user1Id = new ObjectID;
 const user2Id = new ObjectID;
+
 
 const users = [{
   _id: user1Id,
@@ -14,7 +16,7 @@ const users = [{
   password: 'user1pwd',
   tokens: [{
     access: 'auth',
-    token: jwt.sign({_id: user1Id, access:'auth'}, 'secret').toString()
+    token: jwt.sign({_id: user1Id, access:'auth'}, process.env.JWT_SECRET).toString()
   }]
 },{
   _id: user2Id,
@@ -22,7 +24,7 @@ const users = [{
   password: 'user2pwd',
   tokens: [{
     access: 'auth',
-    token: jwt.sign({_id: user2Id, access:'auth'}, 'secret').toString()
+    token: jwt.sign({_id: user2Id, access:'auth'}, process.env.JWT_SECRET).toString()
   }]
 }];
 
@@ -31,7 +33,7 @@ const populateUsers = (done) => {
     let user1 = new User(users[0]).save();
     let user2 = new User(users[1]).save();
 
-    // wait for both above promises to succeed using Promise.all()
+    // wait for both the above promises to succeed using Promise.all()
 
     return Promise.all([user1,user2]);
   }).then(() => done());
